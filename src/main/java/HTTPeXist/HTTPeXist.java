@@ -57,8 +57,7 @@ public class HTTPeXist {
 	public String list(String collection) throws IOException{
 		String lista = new String();
 
-		URL url = new URL(
-				this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection);
+		URL url = new URL(this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection);
 		System.out.println("-->READ-url:" + url.toString());
 		HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 		connect.setRequestMethod("GET");
@@ -93,9 +92,9 @@ public class HTTPeXist {
 			System.err.println("-->SUBIR: Cannot read file " + file);
 			return -1;
 		}
+
 		String document = file.getName();
-		URL url = new URL(
-				this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection + "/" + document);
+		URL url = new URL(this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection + "/" + document);
 		System.out.println("-->SUBIR-url: " + url);
 		HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 		connect.setRequestMethod("PUT");
@@ -124,8 +123,8 @@ public class HTTPeXist {
 		int status = connect.getResponseCode();
 		System.out.println("<--SUBIR: " + status);
 		System.out.println("<--SUBIR: " + connect.getResponseMessage());
-		return connect.getResponseCode();
 
+		return connect.getResponseCode();
 	}
 
 	/* -->DELETE borrar un reurso */
@@ -158,7 +157,6 @@ public class HTTPeXist {
 		System.out.println("-->SUBIR-url STRING: " + url);
 		HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 		connect.setRequestMethod("GET");
-		//connect.connect();
 		status= connect.getResponseCode();
 
 		if(status!=404){
@@ -178,7 +176,6 @@ public class HTTPeXist {
 			connect.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 			connect.setDoOutput(true);
 			connect.getOutputStream().write(postDataBytes);
-			//connect.connect();
 
 			status = connect.getResponseCode();
 			System.out.println("<--SUBIR STRING: " + status);
@@ -203,9 +200,7 @@ public class HTTPeXist {
 		String codigoBase64 = getAuthorizationCode("admin", "admin");
 		connect.setRequestProperty("Authorization", "Basic " + codigoBase64);
 		connect.setRequestProperty("ContentType", "aplication/xml");
-
 		status = connect.getResponseCode();
-
 
 		System.out.println("<--Delete collection: " + status);
 		System.out.println("<--Delete collection: " + connect.getResponseMessage());
@@ -215,11 +210,9 @@ public class HTTPeXist {
 
 	/*-->CREATE (String collection)  */
 	public int create(String collection) throws IOException {
-
 		int status = 0;
 
-		URL url = new URL(
-				this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection + "/" + null);
+		URL url = new URL(this.server + "/exist/rest" + XmldbURI.ROOT_COLLECTION_URI + "/" + collection+ "/" + null);
 		System.out.println("-->READ-url:" + url.toString());
 		HttpURLConnection connect = (HttpURLConnection) url.openConnection();
 		connect.setRequestMethod("PUT");
@@ -232,6 +225,8 @@ public class HTTPeXist {
 		status = connect.getResponseCode();
 		System.out.println("<--Create: " + status);
 		System.out.println("<--Create: " + connect.getResponseMessage());
+		delete(collection, null);
+
 		return status;
 	}
 

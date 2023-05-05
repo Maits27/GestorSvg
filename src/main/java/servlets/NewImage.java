@@ -4,7 +4,6 @@ import HTTPeXist.HTTPeXist;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
 import java.io.IOException;
 
 public class NewImage extends HttpServlet {
@@ -30,26 +29,38 @@ public class NewImage extends HttpServlet {
         String collection = request.getParameter("collection");
         String svgName = request.getParameter("svgName");
 
-        eXist.subir(collection,svgName);
-        eXist.subirString(collection, "<svg>Sartu zure svg</svg>", svgName);
+        int status = eXist.subir(collection,svgName);
+        if(status==404){
 
-        String imagenSVG= eXist.read(collection, svgName);
+            request.setAttribute("informacion", "Ez da kolekzioa existitzen.");
 
-        System.out.println("Servlet- DatosXML " + collection);
-        System.out.println("Servlet- DatosXML " + svgName);
+            System.out.println("\tRedirecting the user to index.jsp  ---> CreateCollection status code: "+status);
 
-        request.setAttribute("collection", collection);
-        request.setAttribute("svgName", svgName);
-        request.setAttribute("imagenSVG", imagenSVG);
+            RequestDispatcher rd = request.getRequestDispatcher("/jsp/index.jsp");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+            rd.forward(request, response);
+        }else{
+            eXist.subirString(collection, "<svg>Sartu zure svg</svg>", svgName);
 
-        String imagenURI = "http://localhost:8080/exist/rest/db/" + collection + "/" + svgName + "/";
-        request.setAttribute("imagenURI", imagenURI);
+            String imagenSVG= eXist.read(collection, svgName);
 
-        System.out.println("     Redireccionando a imagenEdit.jsp");
-        RequestDispatcher rd = request.getRequestDispatcher("/jsp/imagenEdit.jsp");
-        response.setHeader("Cache-Control", "no-cache");
-        response.setDateHeader("Expires", 0);
-        rd.forward(request, response);
+            System.out.println("Servlet- DatosXML " + collection);
+            System.out.println("Servlet- DatosXML " + svgName);
+
+            request.setAttribute("collection", collection);
+            request.setAttribute("svgName", svgName);
+            request.setAttribute("imagenSVG", imagenSVG);
+
+            String imagenURI = "http://localhost:8080/exist/rest/db/" + collection + "/" + svgName + "/";
+            request.setAttribute("imagenURI", imagenURI);
+
+            System.out.println("     Redireccionando a imagenEdit.jsp");
+            RequestDispatcher rd = request.getRequestDispatcher("/jsp/imagenEdit.jsp");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+            rd.forward(request, response);
+        }
 
         System.out.println("---> Saliendo de doPost() de NewImage");
     }
